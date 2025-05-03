@@ -18,25 +18,17 @@ Feature Extraction: Deep learning-based extraction of visual and pose features
 Anomaly Detection: Multi-task model for shoplifting detection and action classification
 Distributed Training: Efficient model training across multiple GPUs
 
-Show Image
-Installation
-Prerequisites
 
 Python 3.8+
 CUDA 11.6+ (for GPU acceleration)
 GPU with at least 8GB memory (16GB recommended)
 
-Setup
-bash# Clone the repository
-git clone https://github.com/vap2999/ShopliftingDetection.git
-cd ShopliftingDetection
+
 
 # Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
-pip install -r requirements.txt
 Dataset
 This project uses the UCF Crime dataset, focusing on shoplifting videos:
 
@@ -70,21 +62,7 @@ python detect.py --model checkpoints/best_model.pth --camera 0 --display
 Performance Results
 Parallelization MethodGPUsTraining Time (s)SpeedupEfficiencyF1 ScoreDP12.601.001.000.755DP42.181.190.300.753DDP1388.701.001.000.755DDP3261.031.490.500.751FSDP1310.091.001.000.783FSDP3188.651.640.550.791
 Project Structure
-ShopliftingDetection/
-├── configs/               # Configuration files
-├── data/                  # Dataset storage
-├── models/                # Model definitions
-│   ├── backbones/         # Feature extraction networks
-│   ├── detection/         # Anomaly detection modules
-│   └── pose/              # Pose estimation integration
-├── utils/                 # Utility functions
-│   ├── data_loading/      # Parallel data loading implementations
-│   ├── distributed/       # Distributed training utilities
-│   └── visualization/     # Result visualization tools
-├── scripts/               # Helper scripts
-├── train.py               # Training script
-├── detect.py              # Inference script
-└── requirements.txt       # Dependencies
+
 Parallelization Strategies
 The project implements and compares several parallelization strategies:
 
@@ -96,8 +74,8 @@ Fully Sharded Data Parallel (FSDP): Memory-efficient parameter sharding across G
 
 Contributors
 
-Vanshi Patel (002057295)
-Malav Gajera (002050537)
+Vanshi Patel
+Malav Gajera 
 
 Citation
 If you use this code in your research, please cite our work:
