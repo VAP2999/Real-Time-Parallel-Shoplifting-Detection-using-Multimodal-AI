@@ -1,0 +1,19 @@
+{
+  "start_time": "2025-04-12 18:58:06",
+  "end_time": "2025-04-12 19:45:57",
+  "elapsed_time": 2870.561899662018,
+  "elapsed_time_formatted": "0h 47m 51s",
+  "n_jobs": 8,
+  "sample_rate": 15,
+  "resize_shape": [
+    224,
+    224
+  ],
+  "max_frames": 300,
+  "batch_size": 32,
+  "test_size": 0.2,
+  "random_seed": 42,
+  "video_count": 950,
+  "feature_dim": 2048,
+  "dataset_path": "./processed_data/ucf_crime_features.h5"
+}
