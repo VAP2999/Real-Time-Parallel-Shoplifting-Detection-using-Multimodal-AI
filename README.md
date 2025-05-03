@@ -1,91 +1,99 @@
-# Real-Time-Parallel-Shoplifting-Detection-using-Multimodal-AI
+# Real-Time Parallel Shoplifting Detection using Multimodal AI
 
-Overview
-This project implements an efficient, real-time shoplifting detection system using advanced parallel computing techniques and multimodal AI. The system combines computer vision and pose estimation to detect suspicious activities in retail environments with high accuracy while optimizing computational resource utilization.
-Key Features
+Advanced parallel computing framework for real-time shoplifting detection combining ResNet-50 visual features with pose estimation data. Implements and benchmarks Joblib, Dask, DP, DDP and FSDP parallelization strategies across multi-GPU clusters, achieving 81% detection accuracy with optimized throughput.
 
-Multimodal Analysis: Combines visual features with pose estimation data for improved detection accuracy
-High-Performance Computing: Implements and compares various parallelization strategies (Joblib, Dask, DP, DDP, FSDP)
-Real-Time Processing: Optimized for low-latency detection in surveillance video streams
-Scalable Architecture: Efficiently utilizes multiple CPUs and GPUs for parallel processing
-High Accuracy: Achieves 81% accuracy and 0.78 F1 score for shoplifting detection
+## Project Overview
 
-System Architecture
-The system is composed of several key components:
+This project addresses the significant challenge of shoplifting detection in retail environments using high-performance parallel computing techniques and multimodal AI. By combining visual features with pose estimation data and implementing various parallelization strategies, we've developed a system that can efficiently process surveillance video data in real-time while maintaining high detection accuracy.
 
-Parallel Data Loading: Optimized video data loading using Joblib and Dask
-Feature Extraction: Deep learning-based extraction of visual and pose features
-Anomaly Detection: Multi-task model for shoplifting detection and action classification
-Distributed Training: Efficient model training across multiple GPUs
+## Key Features
 
+- **Multimodal Feature Extraction**: Combines ResNet-50 visual features with PoseLift pose estimation data
+- **Multiple Parallelization Strategies**:
+  - Joblib and Dask for CPU-based data loading and preprocessing
+  - Data Parallel (DP) for basic multi-GPU training
+  - Distributed Data Parallel (DDP) for process-based efficient parallelism
+  - Fully Sharded Data Parallel (FSDP) for memory-optimized parameter sharding
+- **Optimized Data Pipeline**: Compresses 32GB of raw video data to 4.2GB HDF5 format for efficient storage and retrieval
+- **Performance Monitoring**: Real-time visualization of GPU utilization and temperature using Weights & Biases
+- **Multi-task Learning Model**: Combined anomaly detection and action classification
 
-Python 3.8+
-CUDA 11.6+ (for GPU acceleration)
-GPU with at least 8GB memory (16GB recommended)
+## Performance Highlights
 
+- **High Accuracy**: 81% anomaly detection accuracy with 0.78 F1 score
+- **Efficient Scaling**: 39% reduction in training time when scaling from 1 to 3 GPUs
+- **Memory Optimization**: FSDP with SHARD_GRAD_OP strategy offers the best balance of memory efficiency and computational performance
+- **Mixed Precision Acceleration**: Additional 1.5x speedup with minimal accuracy impact
 
+## Dataset
 
-# Create and activate virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+We utilized the UCF Crime dataset, a comprehensive collection of real-world surveillance videos:
+- Total videos: 1,900 with 128 hours of footage
+- Original size: 104GB, optimized subset: 32GB 
+- Includes multiple crime categories with focus on shoplifting events
+- Processed into 4.2GB HDF5 format for efficient training
 
-Dataset
-This project uses the UCF Crime dataset, focusing on shoplifting videos:
+## Technical Implementation
 
-151 shoplifting videos
-1,000+ normal videos
-Average video duration: 240 seconds
-Average resolution: 320x240 pixels
+### Parallel Data Loading & Preprocessing
 
-To prepare your dataset:
-bash# Download UCF Crime dataset (requires registration)
-python scripts/download_dataset.py --output_dir data/raw
+- **Joblib**: Parallel video file processing with configurable worker counts
+- **Dask**: LocalCluster configuration with customizable workers per CPU
+- **Multi-threaded Frame Extraction**: Efficient temporal sampling at configurable intervals
 
-# Process dataset for training
-python scripts/preprocess_data.py --input_dir data/raw --output_dir data/processed
-Usage
-Model Training
-bash# Single GPU training
-python train.py --config configs/single_gpu.yaml
+### Feature Extraction Pipeline
 
-# Multi-GPU training with DDP
-python -m torch.distributed.launch --nproc_per_node=4 train.py --config configs/ddp.yaml
+- ResNet-50 pre-trained model with final classification layer removed
+- Parallel distribution of feature extraction tasks across available GPUs
+- Normalization and alignment of features across modalities
 
-# FSDP training
-python -m torch.distributed.launch --nproc_per_node=4 train.py --config configs/fsdp.yaml
-Inference
-bash# Run inference on a video file
-python detect.py --model checkpoints/best_model.pth --video path/to/video.mp4 --output output/result.mp4
+### Model Architecture
 
-# Run on a live camera feed
-python detect.py --model checkpoints/best_model.pth --camera 0 --display
-Performance Results
-Parallelization MethodGPUsTraining Time (s)SpeedupEfficiencyF1 ScoreDP12.601.001.000.755DP42.181.190.300.753DDP1388.701.001.000.755DDP3261.031.490.500.751FSDP1310.091.001.000.783FSDP3188.651.640.550.791
-Project Structure
+- Multi-task learning with shared feature extraction layers
+- Task-specific branches for anomaly detection and action classification
+- Batch normalization and dropout for improved training stability
 
-Parallelization Strategies
-The project implements and compares several parallelization strategies:
+### Distributed Training Optimization
 
-Joblib Parallelization: CPU-based parallel processing for data loading and preprocessing
-Dask Distributed Computing: Scalable distributed computing framework for data processing
-Data Parallel (DP): Simple model replication across GPUs
-Distributed Data Parallel (DDP): Process-based parallelism with efficient gradient synchronization
-Fully Sharded Data Parallel (FSDP): Memory-efficient parameter sharding across GPUs
+- DDP implementation with NCCL backend for GPU-to-GPU communication
+- FSDP with different sharding strategies for memory efficiency
+- Mixed precision training using Automatic Mixed Precision (AMP)
 
-Contributors
+## Hardware Requirements
 
-Vanshi Patel
-Malav Gajera 
+- NVIDIA GPUs (tested on NVIDIA Tesla V100 and NVIDIA RTX A5000)
+- CUDA 12.3+
+- PyTorch 1.13.1+
 
-Citation
-If you use this code in your research, please cite our work:
-@article{patel2025realtime,
-  title={Real-Time Parallel Shoplifting Detection using Multimodal AI},
-  author={Patel, Vanshi and Gajera, Malav},
-  journal={Northeastern University Technical Report},
-  year={2025}
-}
-Acknowledgments
+## Software Dependencies
 
-UCF Crime dataset from the Center for Research in Computer Vision
-This research was conducted at Northeastern University
+- Python 3.8.10+
+- PyTorch 1.13.1+
+- CUDA 12.3+
+- Joblib, Dask, NumPy, OpenCV, H5py
+- Weights & Biases (for monitoring)
+
+## Key Research Findings
+
+- DDP and FSDP consistently outperform DP across all GPU configurations
+- 2-GPU configurations show the highest efficiency (≈62%) 
+- 3-GPU setups provide fastest absolute training times with acceptable efficiency (≈50%)
+- Mixed precision training delivers substantial speedups with minimal accuracy impact
+
+## Future Work
+
+- Testing on larger GPU clusters (8+ GPUs)
+- Edge deployment optimization through model compression
+- Exploration of ZeRO-3 for even more efficient distributed training
+- Integration of additional modalities for improved detection accuracy
+
+## References
+
+- [UCF Crime Dataset](https://www.crcv.ucf.edu/projects/real-world/)
+- [Distributed Training in PyTorch](https://pytorch.org/tutorials/beginner/dist_overview.html)
+- [FSDP Documentation](https://pytorch.org/docs/stable/fsdp.html)
+
+## Contributors
+
+- Vanshi Patel
+- Malav Gajera
